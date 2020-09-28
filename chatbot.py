@@ -12,11 +12,11 @@ def eliza():
         sentence = input("> ")
         sentence = preprocess(sentence)
         # to check until it conjugates or not
-        sentence = keyword(sentence)
+        # sentence = keyword(sentence)
         # sentence = conjugate(sentence) // called inside keyword function
         # build reply and get reply are performed inside Keyword method itself.
         # to check emotions part
-        # sentence = emotions(sentence)
+        sentence = emotions(sentence)
         print(sentence)
 
 
@@ -244,18 +244,16 @@ def emotions(statement):
               "think machines have to do with your problem? Don't you think computers can help people? What is it "
               "about machines that worries you? "
     }
-    emotionkeywords = ["hate you", "dont like", "drowsy", "tired", "sleepy", "not interested", "dance", "sing", "happy",
-                       "love", "care", "like you", "play ", "playing", "games", "vacation", "festivals"]
 
+    emotion = isemotion(statement)
+    print(emotion)
     for key in keywords:
         if Flag:
             break
         wordkeylist = key.split()
         for i in range(0, (len(listofwords) - len(wordkeylist) + 1)):
             element = listofwords[i:(i + len(wordkeylist))]
-            emotion = checkforemotion(statement)
-            for emotion in emotionkeywords:
-                emotionkeylist = emotion.split()
+
             if wordkeylist == element and not emotion:
                 emotion = False
                 remainingstring = " ".join(listofwords[i + len(wordkeylist):])
@@ -268,35 +266,58 @@ def emotions(statement):
                 break
             elif emotion:
                 # print("Debuuuuuuuuuuuuuuug")
-                remainingstring = " ".join(listofwords[i + len(emotionkeylist):])
-                conjugatedline = conjugate(remainingstring)
-                joinkey = " ".join(emotionkeylist)
-                indexkey = emotionkeywords.index(joinkey)
-                # print("INDEX KEY IIIIIIIS ", indexkey)
-                if indexkey in range(0, 5):
-                    newdict = {key: replies[key] for key in replies.keys() - {'-1', '13', '14', '15', '16', '17', '18',
-                                                                              '19', '20', '21', '22', '31', '32'}}
-                    index = random.choice(list(newdict))
-                    reply = newdict[index]
-                    finalsentence = reply.replace("*", conjugatedline)
-                # elif indexkey in range(6, 17):
-                elif indexkey >= 6:
-                    # print("insideeeeeeeeeeeeeeeee")
-                    newdict = {key: replies[key] for key in replies.keys() - {'-1', '0', '1', '2', '3', '4', '5', '6',
-                                                                              '7', '8', '9', '10', '11', '12', '24',
-                                                                              '26', '28', '29', '30', '33', '34'}}
-                    index = random.choice(list(newdict))
-                    # print("SELECTED EMOTION KEEEEEEEEEEEEEEEY", index)
-                    reply = newdict[index]
-                    finalsentence = reply.replace("*", conjugatedline)
+                finalsentence = checkforemotion(statement)
+                Flag = True
+                break
             else:
                 finalsentence = replies['-1']
     return finalsentence
 
 
+def isemotion(statement):
+    print("insiiiiiiiiiiiiiiiiiiiide")
+    emotiondetected = ""
+    listofwords = statement.split()
+    emotionkeywords = ["hate you", "dont like", "drowsy", "tired", "sleepy", "not interested", "dance", "sing", "happy",
+                       "love", "care", "like", "play ", "playing", "games", "vacation", "festivals"]
+
+    for emotion in emotionkeywords:
+        emotionkeylist = emotion.split()
+        for i in range(0, (len(listofwords) - len(emotionkeylist) + 1)):
+            element = listofwords[i:(i + len(emotionkeylist))]
+            if emotionkeylist == element:
+                print("emotionkeeeeeey ", element)
+                print("----------", emotionkeylist)
+                emotiondetected = True
+                break
+            else:
+                emotiondetected = False
+    print(emotiondetected)
+    return emotiondetected
+
+
 def checkforemotion(statement):
     emotionkeywords = ["hate you", "dont like", "drowsy", "tired", "sleepy", "not interested", "dance", "sing", "happy",
-                       "love", "care", "like you", "play ", "playing", "games", "vacation", "festivals"]
+                       "love", "care", "like", "play ", "playing", "games", "vacation", "festivals"]
+    emotionreplies = {
+        "0": "May I know the reason for hating me.",
+        "1": "Why do you feel like you dont like *",
+        "2": "Get some rest and you will be fine",
+        "3": "Get some rest and you will be fine",
+        "4": "Get some rest and you will be fine",
+        "5": "Try again. May be it will interest you this time",
+        "6": "I love to dance. Why do you feel like dancing?",
+        "7": "I love singing. Why do you feel like singing?",
+        "8": "Great! What made you feel so happy today?",
+        "9": "I love * too",
+        "10": "Why do you care them the most?",
+        "11": "Why do you feel like you like *",
+        "12": "Really? I like to play * as well",
+        "13": "How many hours can you keep on playing?",
+        "14": "Great! what type of games you like the most? Indoor or outdoor?",
+        "15": "What is your favourite vacation spot? Why do you like it?",
+        "16": "What is the most recent festival you celebrated? Do you celebrate every festival?"
+    }
     listofwords = statement.split()
     for emotion in emotionkeywords:
         emotionkeylist = emotion.split()
@@ -304,7 +325,13 @@ def checkforemotion(statement):
             element = listofwords[i:(i + len(emotionkeylist))]
             if emotionkeylist == element:
                 emotion = True
-    return emotion
+                remainingstring = " ".join(listofwords[i + len(emotionkeylist):])
+                conjugatedline = conjugate(remainingstring)
+                joinkey = " ".join(emotionkeylist)
+                indexkey = str(emotionkeywords.index(joinkey))
+                reply = emotionreplies[indexkey]
+                finalsentence = reply.replace("*", conjugatedline)
+    return finalsentence
 
 
 def main():
